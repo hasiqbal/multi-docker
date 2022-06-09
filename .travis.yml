@@ -1,0 +1,18 @@
+sudo: required
+services: 
+  - docker
+
+before_install:
+ - docker build -t hasiqbal/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run hasiqbal/react-test npm test -- --coverage
+
+after_sucess:
+  - docker build -t hasiqbal/multi-client ./client 
+  - docker build -t hasiqbal/multi-nginx ./nginx
+  - docker build -t hasiqbal/multi-server ./server
+  - docker build -t hasiqbal/mult-worker ./worker
+
+  # login to docker cli 
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKE_ID" --password-stdin
